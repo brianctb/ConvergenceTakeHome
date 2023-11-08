@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const login = async (req, res) => {
     try {
         const { username, password } = req.body;
-        const user = User.findOne({ username });
+        const user = await User.findOne({ username });
         if (!user) {
             return res.status(400).json({ error: 'Invalid username' });
         } else {
@@ -22,6 +22,15 @@ const login = async (req, res) => {
     }
 }
 
+const checkLogin = (req, res, next) => {
+    if (req.session.user) {
+        next();
+    } else {
+        res.status(401).json({ error: 'Not logged in' });
+    }
+}
+
 module.exports = {
-    login
+    login,
+    checkLogin
 }
