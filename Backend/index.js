@@ -1,6 +1,7 @@
 const express = require('express');
 const session = require('express-session');
 const dbconnect = require('./database/database');
+const todoRouter = require('./routes/todoRoutes');
 require('dotenv').config();
 
 const app = express();
@@ -12,6 +13,8 @@ app.use(session({
     saveUninitialized: true
 }));
 
+app.use('/', todoRouter);
+
 const startApp = async () => {
     try {
         await dbconnect();
@@ -21,5 +24,7 @@ const startApp = async () => {
         console.log(err);
     }
 }
+
+
 
 startApp();
