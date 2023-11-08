@@ -2,25 +2,18 @@ const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema(
     {
-        title: {
+        username: {
             type: String,
             required: true
         },
-        category: {
+        password: {
             type: String,
-            required: true
-        },
-        description: {
-            type: String,
-            required: true
-        },
-        publisher: {
-            type: String,
-            required: true
+            required: true,
+            minlength: 8
         }
     }
 )
 
-const Todo = mongoose.model('Todo', schema);
+const User = mongoose.model('User', schema);
 
-module.exports = Todo;
+module.exports = User;
