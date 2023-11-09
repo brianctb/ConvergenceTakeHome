@@ -14,7 +14,7 @@ app.use(session({
     saveUninitialized: true
 }));
 
-app.use('', todoRouter);
+app.use('/api', todoRouter);
 app.use('', authRouter);
 
 const startApp = async () => {

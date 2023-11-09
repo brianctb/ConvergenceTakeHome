@@ -2,18 +2,33 @@ const Todo = require('../models/todo');
 
 const getAllTodo = async (req, res) => {
     try {
-        const todos = await Todo.find({});
-        res.json(todos);
+        let todos;
+        if(req.query.title || req.query.category || req.query.description) {
+            query = {};
+            if(req.query.title) {
+                query.title = req.query.title
+            }
+            if(req.query.category) {
+                query.category = req.query.category
+            }
+            if(req.query.description) {
+                query.description = req.query.description
+            }
+            todos = await Todo.find(query);
+        } else {
+            todos = await Todo.find({});
+        };
+        res.json(todos)
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error: 'Failed to get todos' });
+        res.status(500).send('Failed to get todos');
     }
 }
 
 const createTodo = async (req, res) => {
     try {
         if (!req.body.title || !req.body.category || !req.body.description) {
-            return res.status(400).json({ error: 'Missing fields' });
+            return res.status(400).send('Missing fields');
         }
         const newTodo = await Todo.create({
             title: req.body.title,
@@ -22,10 +37,10 @@ const createTodo = async (req, res) => {
             publisher: req.session.user._id
         })
         await newTodo.save();
-        res.json({message: 'Todo created successfully'});
+        res.send('Todo created successfully');
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error: 'Failed to create todo' });
+        res.status(500).send('Failed to create todo');
     }
 }
 
@@ -33,23 +48,23 @@ const updateTodo = async (req, res) => {
     try {
         const todo = await Todo.findById(req.params.id);
         if (!todo) {
-            return res.status(404).json({ error: 'Todo not found' });
-        } else {
-            if (todo.publisher != req.session.user._id) {
-                return res.status(401).json({ error: 'Not authorized' });
-            }
-            if (!req.body.title || !req.body.category || !req.body.description) {
-                return res.status(400).json({ error: 'Missing fields' });
-            }
-            todo.title = req.body.title;
-            todo.category = req.body.category;
-            todo.description = req.body.description;
-            await todo.save();
-            res.json({message: 'Todo updated successfully'});
+            return res.status(404).send('Todo not found');
         }
+        if (todo.publisher != req.session.user._id) {
+            return res.status(401).send('Not authorized');
+        }
+        if (!req.body.title || !req.body.category || !req.body.description) {
+            return res.status(400).send('Missing fields');
+        }
+        todo.title = req.body.title;
+        todo.category = req.body.category;
+        todo.description = req.body.description;
+        await todo.save();
+        res.send('Todo updated successfully');
+
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error: 'Failed to update todo' });
+        res.status(500).send('Failed to update todo');
     }
 }
 
@@ -57,17 +72,16 @@ const deleteTodo = async (req, res) => {
     try {
         const todo = await Todo.findById(req.params.id);
         if (!todo) {
-            return res.status(404).json({ error: 'Todo not found' });
-        } else {
-            if (todo.publisher != req.session.user._id) {
-                return res.status(401).json({ error: 'Not authorized' });
-            }
-            await todo.deleteOne();
-            res.json({message: 'Todo deleted successfully'});
+            return res.status(404).send('Todo not found' );
+        } 
+        if (todo.publisher != req.session.user._id) {
+            return res.status(401).send('Not authorized');
         }
+        await todo.deleteOne();
+        res.send('Todo deleted successfully');
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error: 'Failed to delete todo' });
+        res.status(500).send('Failed to delete todo');
     }
 }
 
