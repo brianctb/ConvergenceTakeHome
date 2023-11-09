@@ -12,6 +12,9 @@ const getAllTodo = async (req, res) => {
 
 const createTodo = async (req, res) => {
     try {
+        if (!req.body.title || !req.body.category || !req.body.description) {
+            return res.status(400).json({ error: 'Missing fields' });
+        }
         const newTodo = await Todo.create({
             title: req.body.title,
             category: req.body.category,
