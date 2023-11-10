@@ -5,7 +5,7 @@ dotenv.config();
 
 const dbconnect = () => {
     try {
-        // mongodb connection string
+        // mongodb connection string masked with env file
         mongoose.connect(process.env.MONGO_URL, {
         });
         console.log(`MongoDB connected`);

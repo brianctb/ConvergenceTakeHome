@@ -34,6 +34,7 @@ const createTodo = async (req, res) => {
             title: req.body.title,
             category: req.body.category,
             description: req.body.description,
+            //publisher field is the current logged in user
             publisher: req.session.user._id
         })
         await newTodo.save();
@@ -50,6 +51,7 @@ const updateTodo = async (req, res) => {
         if (!todo) {
             return res.status(404).send('Todo not found');
         }
+        //if the session user is not the publisher, status 401
         if (todo.publisher != req.session.user._id) {
             return res.status(401).send('Not authorized');
         }
@@ -73,7 +75,8 @@ const deleteTodo = async (req, res) => {
         const todo = await Todo.findById(req.params.id);
         if (!todo) {
             return res.status(404).send('Todo not found' );
-        } 
+        }
+        //if the session user is not the publisher, status 401 
         if (todo.publisher != req.session.user._id) {
             return res.status(401).send('Not authorized');
         }
