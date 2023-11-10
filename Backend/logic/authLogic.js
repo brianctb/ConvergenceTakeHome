@@ -1,9 +1,16 @@
 const User = require('../models/user');
+const authValidaiton = require('../validation/authValidation')
 const bcrypt = require('bcrypt');
 
 const login = async (req, res) => {
+    const { error } = authValidaiton.loginSchema.validate(req.body);
+    //Validate input before reaching the database 
+    if (error){
+        return res.status(400).json(error);
+    }
     try {
         const { username, password } = req.body;
+        //find the user with that username, if exists
         const user = await User.findOne({ username });
         if (!user) {
             return res.status(400).send('Invalid username');
@@ -22,6 +29,7 @@ const login = async (req, res) => {
     }
 }
 
+//Middleware, check if user is login using session.
 const checkLogin = (req, res, next) => {
     if (req.session.user) {
         next();
